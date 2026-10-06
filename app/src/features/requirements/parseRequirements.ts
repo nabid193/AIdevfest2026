@@ -34,7 +34,7 @@ function flag(value: unknown, field: string): boolean {
   return value;
 }
 // Calendar validation avoids timezone conversion and Date's automatic rollover.
-function validDate(value: string): boolean {
+export function validDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const year = Number(value.slice(0, 4));
   const month = Number(value.slice(5, 7));

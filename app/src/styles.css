@@ -1,4 +1,37 @@
 :root { font-family: "Segoe UI", system-ui, sans-serif; color: #243633; background: #f5f7f5; line-height: 1.55; font-synthesis: none; }
+html { scroll-behavior: smooth; }
+.steps a { color: inherit; text-decoration: none; }
+.steps a:hover { text-decoration: underline; }
+.workflow-controls { border: 0; padding: 0; margin: 0; min-width: 0; }
+.upload-section { background: #fff; border: 1px solid #dde5de; border-radius: 10px; margin-bottom: 24px; }
+.section-heading { gap: 16px; }
+.file-counter { margin: 0 24px 15px; color: #657466; font-size: 12px; }
+.file-list { list-style: none; margin: 0; padding: 0 24px; }
+.file-list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid #e8ede6; padding: 12px 0; font-size: 12px; }
+.file-list li > div:first-child { min-width: 0; overflow-wrap: anywhere; }
+.file-list small { display: block; color: #66786b; margin: 3px 0; }
+.file-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.file-actions button, .secondary { border: 1px solid #cddacf; background: #f9fbf7; color: #254c3c; padding: 7px 11px; border-radius: 6px; font: inherit; font-size: 11px; }
+.review-table { min-width: 710px; }
+.review-table td:first-child { max-width: 200px; }
+.review-table select { width: 100%; max-width: 230px; }
+select, input[type=date] { font: inherit; font-size: 12px; padding: 9px 7px; border-radius: 6px; border: 1px solid #bdcdbf; background: #fff; color: #243633; min-height: 38px; }
+select:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid #b78b32; outline-offset: 3px; }
+.review-table td > small { display: block; margin-top: 4px; color: #66786b; }
+.status-missing, .status-expired { background: #fbe4dd; color: #8a3322; }
+.status-expiryNeeded, .duplicate { background: #fff0ca; color: #795814; }
+.status-ok { background: #e1f2e3; color: #235b35; }
+.status-notProvided { background: #edf0ed; color: #5e6d61; }
+.package-panel { margin-top: 24px; padding: 24px; border: 1px solid #bdcdbf; background: #f0f5e9; border-radius: 10px; font-size: 13px; }
+.package-panel details { margin: 16px 0; color: #793e2b; }
+.package-panel summary { cursor: pointer; }
+.package-panel ul { columns: 2; padding-left: 20px; }
+.ready { color: #235b35; font-weight: 650; }
+.download-link { color: #204f3c; font-size: 14px; font-weight: 650; }
+.session-note { font-size: 11px; color: #66786b; }
+.upload-section .error-panel { margin: 16px 24px; padding-left: 32px; }
+@media (max-width:700px) { .section-heading { flex-wrap: wrap; } .file-list { padding: 0 18px; } .file-list li { align-items: flex-start; flex-wrap: wrap; } .package-panel ul { columns: 1; } }
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior: auto; } }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; }
 button { font: inherit; cursor: pointer; }

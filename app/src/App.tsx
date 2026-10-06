@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { parseRequirements, RequirementsImportError, type TenderRequirements } from './features/requirements/parseRequirements';
+import Workflow from './components/Workflow';
 import { importErrors, messages, type Language } from './i18n/messages';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>('en');
-  const [loaded, setLoaded] = useState<{ data: TenderRequirements; filename: string } | null>(null);
+  const [loaded, setLoaded] = useState<{ data: TenderRequirements; filename: string; version: number } | null>(null);
   const [error, setError] = useState<RequirementsImportError | null>(null);
   const [busy, setBusy] = useState(false);
   const input = useRef<HTMLInputElement>(null);
@@ -14,11 +15,12 @@ export default function App() {
   useEffect(() => { document.documentElement.lang = language; document.title = `${t.brand} · ${t.step1}`; }, [language, t.brand, t.step1]);
 
   async function importFile(file: File) {
+    if (loaded && !window.confirm(language === 'bn' ? 'নতুন দরপত্র যোগ করলে বর্তমান PDF ও মেলানো তথ্য মুছে যাবে। চালিয়ে যাবেন?' : 'Replacing the tender clears the current PDFs and matches after successful import. Continue?')) return;
     const current = ++request.current;
     setBusy(true); setError(null);
     try {
       const data = parseRequirements(await file.text());
-      if (current === request.current) setLoaded({ data, filename: file.name });
+      if (current === request.current) setLoaded({ data, filename: file.name, version: current });
     } catch (failure) {
       if (current === request.current) setError(failure instanceof RequirementsImportError ? failure : new RequirementsImportError('readFailed'));
     } finally { if (current === request.current) setBusy(false); }
@@ -31,7 +33,7 @@ export default function App() {
     <aside className="sidebar">
       <div className="brand"><span className="brand-mark" aria-hidden="true">▤</span><span>{t.brand}</span></div><p className="brand-caption">{t.workspace}</p>
       <nav aria-label={t.navigation}><ol className="steps">{[t.step1, t.step2, t.step3, t.step4].map((label, index) => <li key={index} aria-current={index === 0 ? 'step' : undefined} className={index === 0 ? 'active' : ''}>
-        <span className="step-number">{numbers.format(index + 1)}</span><span>{label}<small>{index === 0 ? t.current : t.upcoming}</small></span>
+        <span className="step-number">{numbers.format(index + 1)}</span><span><a href={`#${["requirements", "documents", "review", "package"][index]}`}>{label}</a></span>
       </li>)}</ol></nav>
       <div className="privacy"><span aria-hidden="true">◈</span><strong>{t.local}</strong><p>{t.localDetail}</p></div>
     </aside>
@@ -49,18 +51,14 @@ export default function App() {
         <div role="status" aria-live="polite" className="import-status">{busy ? t.loading : loaded && !error ? `${t.loaded} · ${loaded.filename}` : ''}</div>
         {error && <div className="error-panel" role="alert"><strong>{t.errorTitle}</strong><p>{importErrors[language][error.code]}</p>{error.field && <p>{t.field}: <code>{error.field}</code></p>}{loaded && <p>{t.preserved}</p>}</div>}
         {tender && loaded ? <>
-          <section className="overview" aria-labelledby="overview-title"><div className="section-label" id="overview-title">{t.overview}</div><h2>{tender.title}</h2>
+          <section id="requirements" className="overview" aria-labelledby="overview-title"><div className="section-label" id="overview-title">{t.overview}</div><h2>{tender.title}</h2>
             <dl className="tender-details">
               <div><dt>{t.tenderId}</dt><dd>{tender.tender_id}</dd></div><div><dt>{t.entity}</dt><dd>{tender.procuring_entity}</dd></div><div><dt>{t.bidder}</dt><dd>{tender.bidder}</dd></div>
               <div><dt>{t.deadline}</dt><dd><time dateTime={tender.submission_deadline}>{new Intl.DateTimeFormat(language === 'bn' ? 'bn-BD' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${tender.submission_deadline}T00:00:00Z`))}</time></dd></div>
             </dl>
           </section>
           <dl className="stats">{[[t.total, requirements.length], [t.mandatory, mandatory], [t.optional, requirements.length - mandatory], [t.expiryCount, requirements.filter(item => item.has_expiry).length]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{numbers.format(Number(value))}</dd></div>)}</dl>
-          <section className="checklist" aria-labelledby="checklist-title"><div className="section-heading"><div><h2 id="checklist-title">{t.checklist}</h2><p>{t.checklistHint}</p></div><span className="count-badge">{numbers.format(requirements.length)}</span></div>
-            <div className="table-scroll" tabIndex={0} role="region" aria-label={t.checklist}><table><thead><tr><th scope="col">{t.order}</th><th scope="col">{t.document}</th><th scope="col">{t.obligation}</th><th scope="col">{t.expiry}</th></tr></thead><tbody>{requirements.map(item => <tr key={item.id}>
-              <td className="order">{numbers.format(item.order)}</td><td><strong>{language === 'bn' ? item.title_bn : item.title_en}</strong><small className="requirement-id">{item.id}</small></td><td><span className={`badge ${item.mandatory ? 'mandatory' : 'optional'}`}>{item.mandatory ? t.mandatory : t.optional}</span></td><td className="expiry">{item.has_expiry ? t.needed : t.notNeeded}</td>
-            </tr>)}</tbody></table></div><p className="source-file">{t.loadedFile}: {loaded.filename}</p>
-          </section>
+          <Workflow key={loaded.version} data={loaded.data} language={language} />
         </> : <section className="empty-state"><div className="empty-mark" aria-hidden="true">☷</div><h2>{t.emptyTitle}</h2><p>{t.emptyDetail}</p></section>}
         <footer>{t.footer}</footer>
       </main>
