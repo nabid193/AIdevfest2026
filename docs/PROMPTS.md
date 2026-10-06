@@ -21,3 +21,9 @@ User supplied the confirmed repository URL and Git author email to finish the pe
 User reported: "pnpm.cmd : The term 'pnpm.cmd' is not recognized as the name of a cmdlet, function, script file, or operable program."
 
 Added a project-local launcher and updated the README. Verified it can find Node/pnpm without the Codex PATH and start the development server. No machine-wide PATH changes.
+
+## Part 1
+
+User: "Start part 1"
+
+Agreed scope: import requirements.json, tender details, requirements ordered by order, English/Bangla switching, and clear validation errors that preserve a previously valid import. Built these features, added sample-derived validation tests and verified actual browser import/language/error/recovery. Later parts remain pending.

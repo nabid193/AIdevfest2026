@@ -25,7 +25,7 @@
 - General rules disallow late submissions, but G11.2 gives precedence to competition-specific instructions and V9.4 specifies a form-only late window.
 - User reports approval of repository name AIdevfest2026; no rename required.
 - Actual organizer-announced T+0/deadline or extensions have not been provided in this chat. Do not claim contest eligibility based on the cover's clock times or file timestamps.
-- Git email has been supplied and configured. Registration number remains to be confirmed. GitHub connector confirms public repository access; CLI push and deployment remain unverified.
+- Git privacy email is configured and CLI push was verified. Registration number remains to be confirmed. Public deployment remains pending.
 
 ## Official implementation references
 
@@ -35,3 +35,13 @@
 - https://www.typescriptlang.org/tsconfig/strict.html — strict type checking.
 
 Consult installed types and current official docs for concrete APIs. No plugin can guarantee an error-free implementation; acceptance evidence is required.
+
+## Part 1 import policy
+
+- Require an object with a tender object and non-empty requirements array. Every documented string must be non-blank; booleans must be true/false without coercion; IDs must be unique; order must be a positive safe integer. This is our validation policy for the documented format, not an organizer-issued formal schema.
+- Check real calendar dates in exact YYYY-MM-DD format (years 0001–9999), including leap-year rules. Display dates with explicit UTC to avoid local timezone shifts.
+- Preserve input strings and case-sensitive IDs. Ignore extra properties for forward compatibility. Accept gaps and equal order values; sort numerically and preserve original order within ties because no tie rule is supplied.
+- Accept a UTF-8 BOM. Parse file contents locally with File.text(); do not rely on MIME labels. Never upload imported JSON. A failed replacement leaves the previous valid tender unchanged, and the same file can be selected again.
+- Imported metadata stays as provided; principal UI and requirement titles switch language. User-chosen filenames/IDs/schema field paths are not translated.
+- The current import lives in memory; refreshing clears it. Persistence is optional and not implemented.
+- Tests use the original sample and in-memory mutations for invalid fields/date boundaries. No unrelated datasets or modifications to the organizer's files are used.
