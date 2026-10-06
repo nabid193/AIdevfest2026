@@ -11,18 +11,18 @@ Environment prepared only. The browser screen is a setup checkpoint, not the app
 
 ## Run
 
-Node.js 24 or newer and pnpm 11.19.0. Verified on this machine with Node.js 24.19.0. This session has pnpm.cmd available; npm is not needed.
+Node.js 24 or newer and pnpm 11.19.0. Verified on this machine with Node.js 24.19.0. Use the project launcher from PowerShell: it finds this machine's bundled runtime even when Node/pnpm are missing from your terminal PATH. It only adjusts PATH for its own process and children.
 
 ```powershell
-pnpm.cmd install --frozen-lockfile
-pnpm.cmd dev
+.\project.cmd install --frozen-lockfile
+.\project.cmd dev
 ```
 
 Development: http://127.0.0.1:5173
 
 ```powershell
-pnpm.cmd check
-pnpm.cmd preview
+.\project.cmd check
+.\project.cmd preview
 ```
 
 `check` runs strict TypeScript checks, 14 supplied-sample/PDF compatibility tests, and a production build. Preview serves the built site at http://127.0.0.1:4173. Stop a running server with Ctrl+C. Deploy only `dist/`.

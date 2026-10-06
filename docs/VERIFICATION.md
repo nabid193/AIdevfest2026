@@ -32,6 +32,14 @@ Environment setup checked on 6 October 2026. These are setup results, not accept
 
 Do not mark these complete until evidence is recorded. A passing test suite cannot guarantee absence of mistakes or hallucinated assumptions.
 
+## External PowerShell launcher
+
+The user's normal PowerShell did not have pnpm on PATH. Added project.cmd to locate bundled Node/pnpm and adjust only its child-process PATH. Verified pnpm 11.19.0 with PATH reduced to Windows system directories; Vite started successfully outside the sandbox and returned HTTP 200. The verification server was then stopped so the user can start it normally.
+
+## Push result
+
+GitHub rejected the initial setup push with GH007 because its commit author email is protected by the user's email-privacy setting. Setup commit 1e52ad1 exists locally; remote publication has not succeeded. Keep email privacy protection enabled; resolve the unpublished commit's author address deliberately before retrying.
+
 ## Git identity follow-up
 
 User supplied their Git email and confirmed the target URL. Local author identity is configured; origin/main was fetched successfully. The existing GitHub initial commit is retained as the parent of setup work. No force push or history replacement is needed.

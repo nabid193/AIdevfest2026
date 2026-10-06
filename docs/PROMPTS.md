@@ -15,3 +15,9 @@ Append actual prompts for each subsequent milestone. Do not replace them with in
 ## Git connection follow-up
 
 User supplied the confirmed repository URL and Git author email to finish the pending Git setup. Configure the provided identity, preserve the existing remote initial commit, commit the verified environment and push to origin/main. The email is stored in Git configuration/commit metadata, not duplicated in application source.
+
+## PowerShell launcher correction
+
+User reported: "pnpm.cmd : The term 'pnpm.cmd' is not recognized as the name of a cmdlet, function, script file, or operable program."
+
+Added a project-local launcher and updated the README. Verified it can find Node/pnpm without the Codex PATH and start the development server. No machine-wide PATH changes.
