@@ -8,6 +8,7 @@ const en = {
   package: 'Create your package', packageHint: 'One English cover, then all matched pages in tender order. Each page receives a footer in a separate margin.', included: 'Included documents', totalPages: 'Total package pages', generated: 'Package created successfully.', download: 'Download again', exportCsv: 'Export checklist CSV',
   generationError: 'The package could not be created. Check your PDF files and try again.', unsupportedText: 'Some tender text uses characters outside the bundled English/Bangla fonts. Please use supported text or contact the organizer.',
   fontLoad: 'The bundled fonts could not be loaded. Check the website connection and retry.', memory: 'Work stays in this tab. Download your package before closing or refreshing.', invalidDate: 'Use a real date in YYYY-MM-DD format.',
+  logoTitle: 'Company logo on cover (optional)', logoHint: 'Choose a PNG or JPEG image to place on the English package cover. The image stays in this browser.', logoPreview: 'Selected company logo', addLogo: 'Add logo image', replaceLogo: 'Replace logo', removeLogo: 'Remove logo', logoProcessing: 'Checking image…', logoType: 'Choose a PNG or JPEG image.', logoInvalid: 'This image could not be read. Choose a valid PNG or JPEG file.',
 };
 export const workflowMessages: Record<Language, Record<keyof typeof en, string>> = {
   en,
@@ -20,5 +21,6 @@ export const workflowMessages: Record<Language, Record<keyof typeof en, string>>
     package: 'প্যাকেজ তৈরি করুন', packageHint: 'একটি ইংরেজি প্রচ্ছদের পরে দরপত্রের ক্রমে সব মেলানো পৃষ্ঠা থাকবে। প্রতিটি পৃষ্ঠায় আলাদা জায়গায় পৃষ্ঠা নম্বর যোগ হবে।', included: 'অন্তর্ভুক্ত নথি', totalPages: 'প্যাকেজের মোট পৃষ্ঠা', generated: 'প্যাকেজ তৈরি হয়েছে।', download: 'আবার ডাউনলোড করুন', exportCsv: 'তালিকা CSV হিসেবে নিন',
     generationError: 'প্যাকেজ তৈরি করা যায়নি। PDF ফাইলগুলো যাচাই করে আবার চেষ্টা করুন।', unsupportedText: 'দরপত্রের কিছু অক্ষর সংযুক্ত ইংরেজি/বাংলা ফন্টে নেই। সমর্থিত লেখা ব্যবহার করুন অথবা আয়োজকের সঙ্গে যোগাযোগ করুন।',
     fontLoad: 'সংযুক্ত ফন্ট লোড হয়নি। ওয়েবসাইটের সংযোগ যাচাই করে আবার চেষ্টা করুন।', memory: 'কাজ এই ট্যাবেই থাকে। বন্ধ বা রিফ্রেশ করার আগে প্যাকেজ ডাউনলোড করুন।', invalidDate: 'YYYY-MM-DD বিন্যাসে বাস্তব তারিখ দিন।',
+    logoTitle: 'প্রচ্ছদে প্রতিষ্ঠানের লোগো (ঐচ্ছিক)', logoHint: 'ইংরেজি প্যাকেজের প্রচ্ছদে যুক্ত করতে PNG অথবা JPEG ছবি নির্বাচন করুন। ছবিটি এই ব্রাউজারেই থাকবে।', logoPreview: 'নির্বাচিত প্রতিষ্ঠানের লোগো', addLogo: 'লোগো যোগ করুন', replaceLogo: 'লোগো পরিবর্তন করুন', removeLogo: 'লোগো সরান', logoProcessing: 'ছবি যাচাই হচ্ছে…', logoType: 'PNG অথবা JPEG ছবি নির্বাচন করুন।', logoInvalid: 'ছবিটি পড়া যায়নি। সঠিক PNG অথবা JPEG ফাইল নির্বাচন করুন।',
   },
 };

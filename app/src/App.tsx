@@ -35,7 +35,7 @@ export default function App() {
       <nav aria-label={t.navigation}><ol className="steps">{[t.step1, t.step2, t.step3, t.step4].map((label, index) => <li key={index} aria-current={index === 0 ? 'step' : undefined} className={index === 0 ? 'active' : ''}>
         <span className="step-number">{numbers.format(index + 1)}</span><span><a href={`#${["requirements", "documents", "review", "package"][index]}`}>{label}</a></span>
       </li>)}</ol></nav>
-      <div className="privacy"><span aria-hidden="true">◈</span><strong>{t.local}</strong><p>{t.localDetail}</p></div>
+      <div className="privacy"><span aria-hidden="true">◈</span><strong>{t.local}</strong></div>
     </aside>
     <div className="main-area">
       <header className="topbar"><span>{t.navigation}</span><div className="language-control" role="group" aria-label={t.language}>

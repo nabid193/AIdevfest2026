@@ -1,15 +1,17 @@
 import { readFile } from 'node:fs/promises';
-import { PDFDocument, degrees } from 'pdf-lib';
+import { PDFDict, PDFDocument, PDFName, degrees } from 'pdf-lib';
 import { describe, expect, it } from 'vitest';
 import { parseRequirements } from '../app/src/features/requirements/parseRequirements';
 import { assertReady, availableFor, review, statusFor, type Matches, type Expiries } from '../app/src/domain/checklist';
 import { checkCapacity, inspectPdf, MAX_BYTES } from '../app/src/features/documents/intake';
 import { createPackage } from '../app/src/features/package/createPackage';
+import { inspectCoverLogo } from '../app/src/features/package/logo';
 
 const root = new URL('../ViveCoding Problem/problem-pack/sample-pack/', import.meta.url);
 const data = parseRequirements(await readFile(new URL('requirements.json', root), 'utf8'));
 const names = ['trade_license_2026.pdf','03_tin_certificate.pdf','04_vat_certificate.pdf','bank_solvency.pdf','experience_cert.pdf','02_technical_proposal.pdf','01_financial_proposal.pdf','scan_0042.pdf'];
 const files = await Promise.all(names.map(async name => inspectPdf(name, new Uint8Array(await readFile(new URL(`documents/${name}`, root))))));
+const sampleLogo = new Uint8Array(await readFile(new URL('documents/company_logo.png', root)));
 const ids = ['R01','R02','R03','R04','R05','R08','R09','R10'];
 const matches: Matches = Object.fromEntries(ids.map((id, i) => [id, files[i]!.id]));
 const expiries: Expiries = { R01: '2027-06-30', R04: '2026-12-31' };
@@ -39,6 +41,11 @@ describe('checklist and intake boundaries', () => {
   it('blocks incomplete packages defensively even if invoked outside the UI', () => expect(() => assertReady(data, files, {}, {})).toThrow('blocking'));
   it('enforces exact 30-file and 50 MB boundaries', () => { expect(() => checkCapacity(29, MAX_BYTES - 10, 10)).not.toThrow(); expect(() => checkCapacity(30, 0, 1)).toThrow('tooMany'); expect(() => checkCapacity(0, MAX_BYTES, 1)).toThrow('tooLarge'); });
   it('rejects a PNG irrespective of a misleading PDF filename', async () => { await expect(inspectPdf('pretend.pdf', new Uint8Array(await readFile(new URL('documents/company_logo.png', root))))).rejects.toThrow('notPdf'); });
+  it('accepts the supplied company logo separately from PDF intake and rejects invalid images', async () => {
+    await expect(inspectCoverLogo('company_logo.png', sampleLogo)).resolves.toMatchObject({ name: 'company_logo.png', type: 'image/png' });
+    await expect(inspectCoverLogo('wrong-type.png', files[0]!.bytes)).rejects.toThrow('logoType');
+    await expect(inspectCoverLogo('broken.png', new Uint8Array(sampleLogo.slice(0, 24)))).rejects.toThrow('logoInvalid');
+  });
   it('rejects corrupted bytes derived from the supplied PDF', async () => { await expect(inspectPdf('cut.pdf', files[0]!.bytes.slice(0, 15))).rejects.toThrow('badPdf'); });
 });
 describe('package integration using official samples', () => {
@@ -61,5 +68,13 @@ describe('package integration using official samples', () => {
   it('renders supplied Bangla text on the English cover when it occurs in tender metadata', async () => {
     const translated = { ...data, tender: { ...data.tender, title: data.requirements[0]!.title_bn } };
     await expect(createPackage(translated, files, matches, expiries, fonts, '2026-10-06')).resolves.toBeInstanceOf(Uint8Array);
+  });
+  it('embeds an optional uploaded logo on the cover without changing the page count', async () => {
+    const logo = await inspectCoverLogo('company_logo.png', sampleLogo);
+    const bytes = await createPackage(data, files, matches, expiries, fonts, '2026-10-06', logo);
+    const output = await PDFDocument.load(bytes);
+    const xObjects = output.getPage(0)!.node.Resources()?.lookup(PDFName.of('XObject'), PDFDict);
+    expect(output.getPageCount()).toBe(16);
+    expect(xObjects?.keys().length).toBeGreaterThan(0);
   });
 });

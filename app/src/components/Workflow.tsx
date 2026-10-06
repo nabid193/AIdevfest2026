@@ -3,6 +3,7 @@ import { availableFor, blocking, review, type UploadedPdf, type Matches, type Ex
 import { checkCapacity, inspectPdf, IntakeError, type IntakeCode } from '../features/documents/intake';
 import { createPackage } from '../features/package/createPackage';
 import { loadPackageFonts } from '../features/package/fonts';
+import { inspectCoverLogo, LogoError, type CoverLogo, type LogoErrorCode } from '../features/package/logo';
 import { validDate, type TenderRequirements } from '../features/requirements/parseRequirements';
 import { workflowMessages } from '../i18n/workflow';
 import { messages, type Language } from '../i18n/messages';
@@ -17,14 +18,19 @@ export default function Workflow({ data, language }: { data: TenderRequirements;
   const [matches, setMatches] = useState<Matches>({});
   const [expiries, setExpiries] = useState<Expiries>({});
   const [errors, setErrors] = useState<{ name: string; code: IntakeCode }[]>([]);
-  const [working, setWorking] = useState<'upload' | 'generate' | null>(null);
+  const [working, setWorking] = useState<'upload' | 'logo' | 'generate' | null>(null);
   const [generationError, setGenerationError] = useState<'generationError' | 'unsupportedText' | 'fontLoad' | null>(null);
   const [result, setResult] = useState<string | null>(null);
+  const [coverLogo, setCoverLogo] = useState<(CoverLogo & { previewUrl: string }) | null>(null);
+  const [logoError, setLogoError] = useState<LogoErrorCode | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+  const logoInput = useRef<HTMLInputElement>(null);
+  const logoUrl = useRef<string | null>(null);
   const active = useRef(true);
   const inProgress = useRef(false);
   useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
   useEffect(() => () => { if (result) URL.revokeObjectURL(result); }, [result]);
+  useEffect(() => () => { if (logoUrl.current) URL.revokeObjectURL(logoUrl.current); }, []);
   const rows = review(data, files, matches, expiries);
   const blocked = rows.filter(row => blocking(row.status));
   const included = rows.filter(row => row.file);
@@ -48,6 +54,25 @@ export default function Workflow({ data, language }: { data: TenderRequirements;
       if (active.current) { setFiles(next); setErrors(rejected); }
     } finally { inProgress.current = false; if (active.current) setWorking(null); }
   }
+  async function addLogo(file: File | undefined) {
+    if (!file || inProgress.current) return;
+    inProgress.current = true; setWorking('logo'); setLogoError(null); invalidate();
+    try {
+      const selected = await inspectCoverLogo(file.name, new Uint8Array(await file.arrayBuffer()));
+      if (active.current) {
+        if (logoUrl.current) URL.revokeObjectURL(logoUrl.current);
+        const previewUrl = URL.createObjectURL(new Blob([selected.bytes], { type: selected.type }));
+        logoUrl.current = previewUrl;
+        setCoverLogo({ ...selected, previewUrl });
+      }
+    } catch (error) {
+      if (active.current) setLogoError(error instanceof LogoError ? error.code : 'logoInvalid');
+    } finally { inProgress.current = false; if (active.current) setWorking(null); }
+  }
+  function removeLogo() {
+    if (logoUrl.current) URL.revokeObjectURL(logoUrl.current);
+    logoUrl.current = null; setCoverLogo(null); setLogoError(null); invalidate();
+  }
   function match(id: string, fileId: string) {
     const file = files.find(item => item.id === fileId);
     if (file && !availableFor(id, file, matches, files)) return;
@@ -66,7 +91,7 @@ export default function Workflow({ data, language }: { data: TenderRequirements;
     try {
       const now = new Date();
       const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-      const bytes = await createPackage(data, files, matches, expiries, await loadPackageFonts(), today);
+      const bytes = await createPackage(data, files, matches, expiries, await loadPackageFonts(), today, coverLogo ?? undefined);
       if (active.current) {
         const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
         setResult(url); download(url, filename);
@@ -105,12 +130,22 @@ export default function Workflow({ data, language }: { data: TenderRequirements;
       </section>
       <section id="package" className="package-panel" aria-labelledby="package-heading">
         <h2 id="package-heading">{t.package}</h2><p>{t.packageHint}</p>
+        <div className="logo-picker" aria-label={t.logoTitle}>
+          <div><strong>{t.logoTitle}</strong><p>{t.logoHint}</p></div>
+          <input ref={logoInput} hidden type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" aria-label={t.logoTitle} onChange={event => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ''; void addLogo(file); }} />
+          <div className="logo-picker-actions">
+            {coverLogo && <div className="logo-preview"><img src={coverLogo.previewUrl} alt={t.logoPreview} /><span>{coverLogo.name}</span></div>}
+            <button type="button" className="secondary" onClick={() => logoInput.current?.click()}>{coverLogo ? t.replaceLogo : t.addLogo}</button>
+            {coverLogo && <button type="button" className="secondary" onClick={removeLogo}>{t.removeLogo}</button>}
+          </div>
+          {logoError && <p className="logo-error" role="alert">{t[logoError]}</p>}
+        </div>
         <p>{t.included}: <strong>{number(included.length)}</strong> · {t.totalPages}: <strong>{number(pages)}</strong></p>
         <div aria-live="polite">{blocked.length ? <details open><summary>{t.blocked} ({number(blocked.length)})</summary><ul>{blocked.map(row => <li key={row.requirement.id}>{language === 'bn' ? row.requirement.title_bn : row.requirement.title_en}: {t[row.status]}</li>)}</ul></details> : <p className="ready">✓ {t.ready}</p>}</div>
         <button type="button" className="primary" disabled={blocked.length > 0 || working !== null} onClick={() => void generate()}>{working === 'generate' ? t.generating : t.generate}</button>
       </section>
     </fieldset>
-    <p role="status" className="import-status">{working === 'upload' ? t.processing : working === 'generate' ? t.generating : result ? t.generated : ''}</p>
+    <p role="status" className="import-status">{working === 'upload' ? t.processing : working === 'logo' ? t.logoProcessing : working === 'generate' ? t.generating : result ? t.generated : ''}</p>
     {generationError && <p role="alert" className="error-panel">{t[generationError]}</p>}
     {result && <a className="download-link" href={result} download={filename}>{t.download} · {filename}</a>}
     <p className="session-note">{t.memory}</p>

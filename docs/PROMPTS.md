@@ -33,3 +33,9 @@ Agreed scope: import requirements.json, tender details, requirements ordered by 
 User: "We were building a frontend web complete the project"
 
 Scope: continue the browser-only Tender Document Package Builder through its mandatory implementation phases. Implemented intake, checklist matching/statuses, and package generation were reviewed; `pnpm.cmd check` passed (73 tests, type checks, static build). The official sample was exercised in the local browser for import, intake, duplicate marking, PNG rejection, page counts, matching, and the 16-page expected total. Full date-field automation, generated PDF download and visual page review, responsive/network audit, public deployment, submission screenshot/output artifacts, and external delivery verification were not established in this turn; see `docs/PLAN.md`. No push or deployment was performed.
+
+## Add company cover logo and shorten privacy copy
+
+User: "Finalize the project add logo from the folder remove extra words like \"Your tender information is read locally in this browser.\" we'll upload the website after that"
+
+Scope: add an optional local PNG/JPEG logo picker that previews and embeds a selected image on the English cover; remove the specified long sidebar sentence in both languages. Use the supplied `company_logo.png` through the picker, not a hard-coded production default. Run the project check and prepare the app for the user's later upload; do not publish it in this step.

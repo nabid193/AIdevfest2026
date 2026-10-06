@@ -2,12 +2,13 @@ import 'regenerator-runtime/runtime.js';
 import { PDFDocument, PDFName, rgb, degrees, type PDFFont } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { assertReady, type UploadedPdf, type Matches, type Expiries } from '../../domain/checklist';
+import type { CoverLogo } from './logo';
 import type { TenderRequirements } from '../requirements/parseRequirements';
 
 export interface PackageFonts { latin: Uint8Array; bengali: Uint8Array }
 const clean = (value: string) => value.replace(/[\u0000-\u001f\u007f]/g, ' ');
 
-export async function createPackage(data: TenderRequirements, files: UploadedPdf[], matches: Matches, expiries: Expiries, fonts: PackageFonts, madeOn: string): Promise<Uint8Array<ArrayBuffer>> {
+export async function createPackage(data: TenderRequirements, files: UploadedPdf[], matches: Matches, expiries: Expiries, fonts: PackageFonts, madeOn: string, logo?: CoverLogo): Promise<Uint8Array<ArrayBuffer>> {
   const rows = assertReady(data, files, matches, expiries);
   const included = rows.filter(row => row.file).sort((a, b) => a.requirement.order - b.requirement.order);
   const output = await PDFDocument.create();
@@ -15,6 +16,7 @@ export async function createPackage(data: TenderRequirements, files: UploadedPdf
   const latin = await output.embedFont(fonts.latin, { subset: true });
   const bengali = await output.embedFont(fonts.bengali, { subset: true });
   const fontFor = (char: string) => /[\u0980-\u09ff]/.test(char) ? bengali : latin;
+  const coverLogo = logo ? logo.type === 'image/png' ? await output.embedPng(logo.bytes) : await output.embedJpg(logo.bytes) : undefined;
   function runs(value: string) {
     const result: { text: string; font: PDFFont }[] = [];
     for (const char of clean(value)) {
@@ -51,8 +53,17 @@ export async function createPackage(data: TenderRequirements, files: UploadedPdf
   // A single cover remains readable even for long metadata: extend its height instead of clipping text.
   const fontSize = 12;
   const coverLines = contents.flatMap(value => value ? wrap(value, fontSize, 499) : ['']);
-  const cover = output.addPage([595, Math.max(842, 112 + coverLines.length * 20)]);
-  let y = cover.getHeight() - 58;
+  const cover = output.addPage([595, Math.max(842, (coverLogo ? 168 : 112) + coverLines.length * 20)]);
+  if (coverLogo) {
+    const dimensions = coverLogo.scaleToFit(84, 54);
+    cover.drawImage(coverLogo, {
+      x: cover.getWidth() - 48 - dimensions.width,
+      y: cover.getHeight() - 48 - dimensions.height,
+      width: dimensions.width,
+      height: dimensions.height,
+    });
+  }
+  let y = cover.getHeight() - (coverLogo ? 108 : 58);
   for (const line of coverLines) {
     let x = 48;
     for (const run of runs(line)) { cover.drawText(run.text, { x, y, size: fontSize, font: run.font, color: rgb(.08, .22, .18) }); x += run.font.widthOfTextAtSize(run.text, fontSize); }

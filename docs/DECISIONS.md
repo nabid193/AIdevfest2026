@@ -14,6 +14,7 @@
 - 50 MB: statement does not define decimal/binary units. Conservative planned interpretation is 50,000,000 bytes of retained PDF uploads. Document this assumption and adjust if organizer clarifies.
 - Retain duplicate uploads with visible markers and count each retained file toward limits; prevent matching identical content twice. The statement does not require deleting duplicates or blocking generation for an unused duplicate.
 - Do not silently replace occupied matches. The interface should expose reassignment clearly and reset file-specific expiry on replacement unless the user re-enters it.
+- Company branding is an optional cover enhancement: offer a separate local PNG/JPEG picker, validate image bytes, preview/remove the selection, and embed it on the English cover. Do not count it as a tender PDF or hard-code the supplied sample logo; users choose an image for each tender session.
 - Footer safety: reserve actual space when composing pages, preserving source content and orientation. Simply drawing text over existing bottom margins is insufficient.
 - Unseen tender metadata may exceed one cover page. Plan readable fitting while preserving P6.1's single first-page cover. Very long fields/large requirement counts have no stated JSON limits; do not invent organizer constraints.
 - Basic cover is English. Use of arbitrary Unicode metadata may require an embedded licensed font; decide during PDF phase rather than claiming standard PDF fonts cover all scripts.

@@ -60,11 +60,11 @@ Tender T-2026-0417; deadline 2026-10-20; bidder Meghna Tech Solutions Ltd.; titl
 | 9 / R09 | Financial Proposal | 01_financial_proposal.pdf | 2 | Not required |
 | 10 / R10 | Signed Declaration | scan_0042.pdf | 1 | Not required |
 
-Basic output: one cover plus 15 document pages = 16 pages. No bonus index included. Old trade_license_2025.pdf expires 2025-06-30 and must not be selected for a valid package. company_logo.png is rejected by PDF intake (separate optional image tool may accept PNG). scan_0042.pdf is a real image-only declaration, not a corrupt/empty PDF. No OCR requirement. Filenames do not determine order.
+Basic output: one cover plus 15 document pages = 16 pages. No bonus index included. Old trade_license_2025.pdf expires 2025-06-30 and must not be selected for a valid package. company_logo.png is correctly rejected by PDF intake and can be selected separately in the optional cover-logo picker. scan_0042.pdf is a real image-only declaration, not a corrupt/empty PDF. No OCR requirement. Filenames do not determine order.
 
 ## Optional work (P7)
 
-Index with document starting pages; PNG seal/signature on chosen pages; Excel/CSV checklist; saved/reopened work; Bangla PDF text; filename-based suggestions; clear damaged/encrypted PDF errors; optional user-key AI. Main tasks take priority. ZIP import and automatic expiry extraction are not mandatory.
+Index with document starting pages; PNG seal/signature on chosen pages; company logo on the cover; Excel/CSV checklist; saved/reopened work; Bangla PDF text; filename-based suggestions; clear damaged/encrypted PDF errors; optional user-key AI. Main tasks take priority. ZIP import and automatic expiry extraction are not mandatory. The cover logo is selected separately from PDF intake, accepts locally validated PNG/JPEG, and is never preloaded from sample data.
 
 ## Contest obligations
 

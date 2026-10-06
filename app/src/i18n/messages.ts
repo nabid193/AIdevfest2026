@@ -3,7 +3,7 @@ export type Language = 'en' | 'bn';
 const en = {
   brand: 'TenderDesk', workspace: 'DOCUMENT PACKAGE BUILDER',
   navigation: 'Package preparation', step1: 'Tender requirements', step2: 'Upload documents', step3: 'Match & review', step4: 'Create package',
-  current: 'Current step', upcoming: 'Coming next', local: 'Files stay on your device', localDetail: 'Your tender information is read locally in this browser.',
+  current: 'Current step', upcoming: 'Coming next', local: 'Files stay on your device',
   eyebrow: 'BROWSER-ONLY TENDER WORKSPACE', title: 'Build a complete submission.', intro: 'Import your requirements, match your PDFs, and create one checked document package.',
   importTitle: 'Import your requirements', importDetail: 'Choose the requirements.json file supplied with your tender.',
   choose: 'Choose JSON file', replace: 'Replace JSON file', loading: 'Reading file…', fileLabel: 'Tender requirements JSON file',
@@ -22,7 +22,7 @@ export const messages: Record<Language, Messages> = {
   bn: {
     brand: 'টেন্ডারডেস্ক', workspace: 'দরপত্রের নথি প্যাকেজ প্রস্তুতকারী',
     navigation: 'প্যাকেজ প্রস্তুতির ধাপ', step1: 'দরপত্রের চাহিদা', step2: 'নথি যোগ করুন', step3: 'মিলিয়ে যাচাই করুন', step4: 'প্যাকেজ তৈরি করুন',
-    current: 'বর্তমান ধাপ', upcoming: 'পরবর্তী ধাপে আসছে', local: 'ফাইল আপনার ডিভাইসেই থাকে', localDetail: 'দরপত্রের তথ্য এই ব্রাউজারেই পড়া হয়।',
+    current: 'বর্তমান ধাপ', upcoming: 'পরবর্তী ধাপে আসছে', local: 'ফাইল আপনার ডিভাইসেই থাকে',
     eyebrow: 'ব্রাউজারেই দরপত্র প্রস্তুতি', title: 'সম্পূর্ণ দরপত্র প্যাকেজ তৈরি করুন।', intro: 'চাহিদার তালিকা যোগ করুন, PDF মিলিয়ে দিন এবং যাচাইকৃত নথির প্যাকেজ তৈরি করুন।',
     importTitle: 'চাহিদার ফাইল যোগ করুন', importDetail: 'দরপত্রের সঙ্গে দেওয়া requirements.json ফাইলটি নির্বাচন করুন।',
     choose: 'JSON ফাইল নির্বাচন করুন', replace: 'JSON ফাইল পরিবর্তন করুন', loading: 'ফাইল পড়া হচ্ছে…', fileLabel: 'দরপত্রের চাহিদার JSON ফাইল',
