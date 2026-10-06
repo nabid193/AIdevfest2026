@@ -1,0 +1,71 @@
+{
+  "source": "Provided fictional sample pack; independently inspected with pypdf and image review",
+  "requirementsSha256": "37fd53d30a2192d96d4ebdc7275c3511968c51dfd08daf05eade138ad513d307",
+  "files": [
+    {
+      "name": "01_financial_proposal.pdf",
+      "bytes": 4060,
+      "sha256": "d3278fe1c6c3500c4d57501daa43e68c893144784c9eeef57222649d6249eaa4",
+      "pages": 2
+    },
+    {
+      "name": "02_technical_proposal.pdf",
+      "bytes": 9286,
+      "sha256": "66908140f78b35598ef466ae7912fb32ca847452792f5dac70a34d4aa678b944",
+      "pages": 6
+    },
+    {
+      "name": "03_tin_certificate.pdf",
+      "bytes": 2606,
+      "sha256": "db133c01a547fb9105369203583afa13e225e389be35389448811e3e81595e01",
+      "pages": 1
+    },
+    {
+      "name": "04_vat_certificate.pdf",
+      "bytes": 2616,
+      "sha256": "6045c2f41b13d828f255307b86325866483e307c37cc0f1a95fa5eafa599ad78",
+      "pages": 1
+    },
+    {
+      "name": "bank_solvency.pdf",
+      "bytes": 2923,
+      "sha256": "5c4271f71af386b19735c13b14d4f6404b948599d4813adc966f4079a3ac50e7",
+      "pages": 1
+    },
+    {
+      "name": "company_logo.png",
+      "bytes": 5321,
+      "sha256": "2e4fcd92005f67269873f87396017fc94db861879705511f3f2faf2f037beb40"
+    },
+    {
+      "name": "experience_cert (1).pdf",
+      "bytes": 3995,
+      "sha256": "91cb4ab661a5418ff13a9b2361d14f71d6b63ad47a33f4468aa90a37d066f8cd",
+      "pages": 2
+    },
+    {
+      "name": "experience_cert.pdf",
+      "bytes": 3995,
+      "sha256": "91cb4ab661a5418ff13a9b2361d14f71d6b63ad47a33f4468aa90a37d066f8cd",
+      "pages": 2
+    },
+    {
+      "name": "scan_0042.pdf",
+      "bytes": 171663,
+      "sha256": "33b05cbad568a1c26d7a227689a36fa497a8a56fc9795fb1302ab7a4060751d9",
+      "pages": 1
+    },
+    {
+      "name": "trade_license_2025.pdf",
+      "bytes": 2946,
+      "sha256": "23cc7ed1f827c757432e7c03831fae0cd5372d78c2ea69594ec00ec51b94e6cc",
+      "pages": 1
+    },
+    {
+      "name": "trade_license_2026.pdf",
+      "bytes": 2945,
+      "sha256": "f4c26884af9440000a38979f2fc65e14960264ef41d4bf615082da74c61cfcf1",
+      "pages": 1
+    }
+  ]
+}
