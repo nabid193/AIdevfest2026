@@ -2,6 +2,7 @@
 html { scroll-behavior: smooth; }
 .steps a { color: inherit; text-decoration: none; }
 .steps a:hover { text-decoration: underline; }
+.steps li.locked { color: #aabbb1; }
 .workflow-controls { border: 0; padding: 0; margin: 0; min-width: 0; }
 .upload-section { background: #fff; border: 1px solid #dde5de; border-radius: 10px; margin-bottom: 24px; }
 .section-heading { gap: 16px; }
@@ -46,7 +47,7 @@ button { font: inherit; cursor: pointer; }
 button:focus-visible, [tabindex]:focus-visible { outline: 3px solid #b78b32; outline-offset: 4px; }
 button:disabled { cursor: wait; opacity: .65; }
 .workspace { display: flex; min-height: 100vh; }
-.sidebar { width: 250px; flex-shrink: 0; padding: 36px 25px; background: #153e35; color: #edf6f0; display: flex; flex-direction: column; }
+.sidebar { position: sticky; top: 0; align-self: flex-start; height: 100vh; overflow-y: auto; width: 250px; flex-shrink: 0; padding: 36px 25px; background: #153e35; color: #edf6f0; display: flex; flex-direction: column; }
 .brand { display: flex; align-items: center; gap: 11px; font-weight: 700; font-size: 23px; letter-spacing: -.6px; }
 .brand-mark { border: 1px solid #91ad9b; width: 34px; height: 37px; border-radius: 9px; text-align: center; color: #dbe8ad; }
 .brand-caption { font-size: 9px; letter-spacing: 1.4px; margin: 13px 0 43px; color: #b4ccc2; }
@@ -112,4 +113,4 @@ td strong { font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
 footer { font-size: 11px; color: #728172; margin-top: 24px; line-height: 1.8; }
 html[lang=bn] .eyebrow, html[lang=bn] .brand-caption { letter-spacing: 0; }
 @media (max-width: 1050px) { .sidebar { width: 205px; padding: 30px 17px; } main { padding: 30px 25px; } .topbar { padding: 18px 25px; } .import-card { flex-wrap: wrap; } .import-card .primary { margin-left: 72px; } .tender-details { grid-template-columns: 1fr 1fr; } td, th { padding-left: 16px; padding-right: 16px; } }
-@media (max-width: 700px) { .workspace { display: block; } .sidebar { width: 100%; padding: 17px 20px; } .brand-caption, .steps, .privacy { display: none; } .brand { font-size: 20px; } .brand-mark { width: 28px; height: 30px; } .topbar { padding: 12px 20px; min-height: 65px; } main { padding: 27px 18px; } .import-card { padding: 20px; gap: 13px; } .import-card .primary { margin-left: 0; width: 100%; } .file-icon { display: none; } .stats { grid-template-columns: 1fr 1fr; gap: 10px; } .overview { padding: 20px; } .tender-details { gap: 18px; } table { min-width: 550px; } .section-heading { padding: 20px; } .empty-state { padding: 45px 20px; } }
+@media (max-width: 700px) { .workspace { display: block; } .sidebar { position: static; height: auto; overflow: visible; width: 100%; padding: 17px 20px; } .brand-caption, .steps, .privacy { display: none; } .brand { font-size: 20px; } .brand-mark { width: 28px; height: 30px; } .topbar { padding: 12px 20px; min-height: 65px; } main { padding: 27px 18px; } .import-card { padding: 20px; gap: 13px; } .import-card .primary { margin-left: 0; width: 100%; } .file-icon { display: none; } .stats { grid-template-columns: 1fr 1fr; gap: 10px; } .overview { padding: 20px; } .tender-details { gap: 18px; } table { min-width: 550px; } .section-heading { padding: 20px; } .empty-state { padding: 45px 20px; } }

@@ -3,8 +3,11 @@ import { parseRequirements, RequirementsImportError, type TenderRequirements } f
 import Workflow from './components/Workflow';
 import { importErrors, messages, type Language } from './i18n/messages';
 
+const stepTargets = ["requirements", "documents", "review", "package"];
+
 export default function App() {
   const [language, setLanguage] = useState<Language>('en');
+  const [activeStep, setActiveStep] = useState(0);
   const [loaded, setLoaded] = useState<{ data: TenderRequirements; filename: string; version: number } | null>(null);
   const [error, setError] = useState<RequirementsImportError | null>(null);
   const [busy, setBusy] = useState(false);
@@ -13,6 +16,15 @@ export default function App() {
   const t = messages[language];
   const numbers = new Intl.NumberFormat(language === 'bn' ? 'bn-BD' : 'en-GB');
   useEffect(() => { document.documentElement.lang = language; document.title = `${t.brand} · ${t.step1}`; }, [language, t.brand, t.step1]);
+  useEffect(() => {
+    const syncStep = () => {
+      const index = stepTargets.indexOf(window.location.hash.slice(1));
+      setActiveStep(loaded && index >= 0 ? index : 0);
+    };
+    syncStep();
+    window.addEventListener('hashchange', syncStep);
+    return () => window.removeEventListener('hashchange', syncStep);
+  }, [loaded]);
 
   async function importFile(file: File) {
     if (loaded && !window.confirm(language === 'bn' ? 'নতুন দরপত্র যোগ করলে বর্তমান PDF ও মেলানো তথ্য মুছে যাবে। চালিয়ে যাবেন?' : 'Replacing the tender clears the current PDFs and matches after successful import. Continue?')) return;
@@ -32,9 +44,12 @@ export default function App() {
   return <div className="workspace">
     <aside className="sidebar">
       <div className="brand"><span className="brand-mark" aria-hidden="true">▤</span><span>{t.brand}</span></div><p className="brand-caption">{t.workspace}</p>
-      <nav aria-label={t.navigation}><ol className="steps">{[t.step1, t.step2, t.step3, t.step4].map((label, index) => <li key={index} aria-current={index === 0 ? 'step' : undefined} className={index === 0 ? 'active' : ''}>
-        <span className="step-number">{numbers.format(index + 1)}</span><span><a href={`#${["requirements", "documents", "review", "package"][index]}`}>{label}</a></span>
-      </li>)}</ol></nav>
+      <nav aria-label={t.navigation}><ol className="steps">{[t.step1, t.step2, t.step3, t.step4].map((label, index) => {
+        const target = loaded ? stepTargets[index] : "import-card";
+        return <li key={index} aria-current={index === activeStep ? 'step' : undefined} className={`${index === activeStep ? 'active' : ''}${!loaded && index > 0 ? ' locked' : ''}`}>
+          <span className="step-number">{numbers.format(index + 1)}</span><span><a href={`#${target}`}>{label}</a>{!loaded && index > 0 && <small>{t.stepPrerequisite}</small>}</span>
+        </li>;
+      })}</ol></nav>
       <div className="privacy"><span aria-hidden="true">◈</span><strong>{t.local}</strong></div>
     </aside>
     <div className="main-area">
@@ -43,7 +58,7 @@ export default function App() {
       </div></header>
       <main>
         <div className="page-heading"><p className="eyebrow">{t.eyebrow}</p><h1>{t.title}</h1><p>{t.intro}</p></div>
-        <section className="import-card" aria-labelledby="import-title" aria-busy={busy}>
+        <section id="import-card" className="import-card" aria-labelledby="import-title" aria-busy={busy}>
           <div className="file-icon" aria-hidden="true">↥</div><div className="import-copy"><h2 id="import-title">{t.importTitle}</h2><p>{t.importDetail}</p><small>{t.jsonNote}</small></div>
           <input ref={input} type="file" hidden accept=".json,application/json" aria-label={t.fileLabel} onChange={event => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ''; if (file) void importFile(file); }} />
           <button className="primary" type="button" disabled={busy} onClick={() => input.current?.click()}>{busy ? t.loading : loaded ? t.replace : t.choose}<span aria-hidden="true"> ↑</span></button>

@@ -39,3 +39,15 @@ Scope: continue the browser-only Tender Document Package Builder through its man
 User: "Finalize the project add logo from the folder remove extra words like \"Your tender information is read locally in this browser.\" we'll upload the website after that"
 
 Scope: add an optional local PNG/JPEG logo picker that previews and embeds a selected image on the English cover; remove the specified long sidebar sentence in both languages. Use the supplied `company_logo.png` through the picker, not a hard-coded production default. Run the project check and prepare the app for the user's later upload; do not publish it in this step.
+
+## Fix step navigation before requirements import
+
+User: "for some reason i can't move to [Upload documents](http://127.0.0.1:4173/#documents)\n\n1. 3[Match & review](http://127.0.0.1:4173/#review)\n2. 4[Create package](http://127.0.0.1:4173/#package)"
+
+Scope: keep desktop step navigation visible while scrolling, track the active section, and make the workflow navigation lead to the requirements import card until requirements are loaded. Explain the prerequisite in English and Bangla, then use real section links after import. Do not deploy or upload the website.
+
+## Check against the problem statement
+
+User: "check if my website follows them or not" (followed by the acceptance criteria pasted in that turn for Sections 4.1–4.9, 5, 6, and optional 7).
+
+Scope: compare the implementation, automated checks, local browser workflow, and generated sample PDF against the supplied criteria. Record verified behavior and remaining checks; do not deploy the site.
