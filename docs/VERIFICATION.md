@@ -1,32 +1,72 @@
 # Verification record
 
-Last milestone: Part 1, requirements import, 6 October 2026. Later application parts are not complete.
+## Current independent review — 8 November 2026
 
-## Passed
+### Confirmed by inspecting the uploaded source archive
 
-- Node.js v24.19.0, pnpm 11.19.0; exact dependencies and lockfile.
-- `pnpm.cmd check`: strict app/tooling TypeScript checks, 58 tests, static production build.
-- 14 setup tests verify supplied file hashes, all PDF page counts, duplicate bytes, PNG rejection by PDF loader, and scanned-PDF load/save compatibility.
-- 44 requirements tests cover the official file, BOM, numeric stable sorting, tied/gapped order, malformed JSON, wrong root/section types, blank fields, real/leap calendar dates, empty requirements, duplicate IDs, invalid order, strict booleans, and extension fields. Tests derive from the supplied sample in memory; original files are unchanged.
-- Actual in-app browser file chooser imported official requirements.json: 10 rows, eight mandatory, two optional, three expiry flags, correct five tender fields and 20 October 2026 deadline.
-- Language switch translated navigation, instructions, table labels, requirement titles, numbers, dates and existing import errors without reimporting.
-- Invalid replacement using the supplied README.txt displayed an error in Bangla and English while retaining all ten original rows and tender details. Re-selecting the same valid JSON cleared the error and restored success state.
-- No captured browser warnings/errors during the tested flow.
-- Desktop and 390-pixel viewport inspected. The narrow page had no horizontal document overflow; the table has a separate horizontal scrolling region. Viewport restored after testing.
-- English/Bangla full-page evidence saved under screenshots/part1-requirements-en.jpg and screenshots/part1-requirements-bn.jpg. These show Part 1 requirements, not the future document-status checklist required for final submission.
-- Source inspection: import uses browser File.text() and JSON parsing only; no upload endpoint, fetch call, external font, API, or persistence was introduced.
-- GitHub CLI push was verified for setup/launcher commit cf344ad using the user's GitHub privacy address. Public deployment is still pending.
+- The archive contains the complete application source under `app/`, project documentation under `docs/`, tests under `tests/`, and the original problem statement and fictional sample pack under `ViveCoding Problem/`.
+- The application source includes requirements JSON parsing, PDF intake, page counting, SHA-256 duplicate detection, one-to-one matching, expiry validation, the five required statuses, package blocking, PDF generation, CSV export, an optional cover logo and English/Bangla interface messages.
+- The supplied requirements file contains 10 requirements for tender `T-2026-0417`, with a 20 October 2026 deadline.
+- The supplied sample inventory contains 11 assets: 10 PDFs and one PNG logo. The selected eight valid package documents total 15 source pages; the expected basic package is one cover plus 15 source pages (16 pages).
+- The two experience certificate PDFs are byte-identical. The supplied PNG logo is separate from PDF intake and can be selected by the cover-logo feature.
+- The Vercel deployment target is static: Vite's configured output directory is `dist/`. No application backend is configured.
 
-## Environment notes
+### Node and package-manager compatibility update
 
-Registry access and Vite Windows subprocesses required sandbox approval. project.cmd makes bundled Node/pnpm available to a normal PowerShell process without permanent PATH changes. The local development server uses port 5173; production preview uses 4173.
+- The project now targets Node.js 24.x. `.nvmrc` and `.node-version` select the 24 line, `package.json` declares `24.x`, and pnpm's engine baseline is `24.0.0` with `engineStrict: true`.
+- The package manager remains pinned to `pnpm@11.19.0`; the dependency lockfile is unchanged.
+- The project uses `pnpm-workspace.yaml` for pnpm 11 workspace settings (`nodeVersion`, `engineStrict`, `saveExact` and `storeDir`).
+- The GitHub Actions workflow reads `.nvmrc`, installs pnpm 11.19.0 and runs `pnpm check`.
+- The user reported that `pnpm install --frozen-lockfile` completed successfully on their Mac: 55 packages were installed and pnpm reported version 11.19.0.
+- The user's first `pnpm check` failed in `app/src/components/Workflow.tsx`: `LogoError` was declared inside the `try` block and then referenced from `catch`, so it was out of scope; TypeScript also reported the caught error as `unknown`. This release fixes the issue with a narrow structural guard for the two supported logo error codes.
+- The user's `nvm install 24` command did not run because `nvm` is not installed in their shell. README instructions now include the official Node.js 24 macOS installer as an alternative; the user must confirm `node --version` reports `v24.x` before the final Node 24 checks.
 
-## Still pending
+### Limited checks reproduced in this environment
 
-- PDF intake, matching/unmatching, expiry/status engine, duplicate matching restrictions, upload limits, actual PDF generation/download.
-- All later bilingual workflows, keyboard/end-to-end acceptance, browser network audit during PDF processing.
-- Visual inspection of exported source content, cover, footers and page ordering.
-- Standalone latest Chrome and final deployed-site verification (current browser inspection uses the in-app browser).
-- Public deployment, final output PDF, document-status screenshot, registration number, contest eligibility and final submission.
+- The globally available TypeScript compiler (`tsc` 5.8.3) compiled `parseRequirements.ts` and `checklist.ts` with strict, no-unused checks: passed.
+- Independent Node assertions against the compiled domain modules verified the official 10-requirement JSON, eight mandatory/two optional counts, date boundaries, invalid JSON rejection, initial statuses, expiry-needed/expired/OK transitions and duplicate-match prevention: passed.
+- Python/pypdf checks verified the sample requirements hash, every sample asset's byte count and SHA-256 hash, and the page counts recorded in the sample manifest: passed.
+- JSON and YAML configuration parsing: passed.
 
-The import is in-memory only; refresh clears it. Schema validation choices are documented in DECISIONS.md. Passing these checks is evidence for Part 1, not a guarantee that future functionality is correct.
+### Not independently reproduced in this environment
+
+- Full application TypeScript type checks.
+- Full Vitest test suite.
+- Production Vite build and preview.
+- Full interactive browser workflow in English and Bangla.
+- PDF generation and visual review from the current source build.
+- Responsive and keyboard testing on the current build.
+- Browser network audit proving no document data is sent to a server.
+- Public Vercel deployment and signed-out live-site verification.
+
+The current model execution environment cannot reproduce the user's Mac dependency installation. The user's successful install is recorded as user-reported evidence, not independently reproduced here. The corrected logo error handler has not yet been rerun through the user's TypeScript check. No full typecheck, Vitest pass or production build is claimed until the user reruns the commands on Node.js 24.x.
+
+
+## Historical project-session notes (not re-run during the current review)
+
+The prior `docs/PLAN.md` and `docs/PROMPTS.md` recorded that the official sample workflow had been exercised locally for requirements import, PDF intake, matching, expiry/status handling and 16-page package generation. The prior plan reported 75 tests, strict type checks and a static build passing. The verification file in the uploaded archive reported 58 tests and only Part 1 complete. Because these historical notes are inconsistent and the current environment could not reproduce the commands, treat them as historical evidence only; the release gate is to rerun the current repository's `pnpm check` on Node.js 24.x.
+
+## Required release checks
+
+1. Install exactly from the lockfile on Node.js 24.x and pnpm 11.19.0: `pnpm install --frozen-lockfile`.
+2. Run `pnpm check` and retain the terminal output.
+3. Run `pnpm build` and `pnpm preview`.
+4. In Chrome, import the official `requirements.json`; confirm all 10 requirements, 8 mandatory and 2 optional.
+5. Add the official PDFs. Confirm page counts, rejection of `company_logo.png` as a PDF, and duplicate marking of `experience_cert.pdf` and `experience_cert (1).pdf`.
+6. Match the eight valid documents, leave the two optional requirements unprovided, and enter expiries `2027-06-30` for R01 and `2026-12-31` for R04. Confirm all included rows are OK and package generation is enabled.
+7. Test Missing, Not provided, Expiry date needed, Expired and OK, including an expiry equal to the submission deadline.
+8. Generate the package from the app. Confirm filename `T-2026-0417_Package.pdf`, 16 pages, cover fields, source page order, scanned declaration visibility and footer on every page without covering source content.
+9. Repeat the main workflow in Bangla. Visually inspect the PDF's Bengali glyph shaping if Bengali tender metadata is used.
+10. Test a narrow viewport, keyboard focus, removal/rematching, malformed and password-protected PDFs, and CSV export.
+11. Inspect the browser Network panel while importing and processing documents; verify that the PDFs, JSON and logo are not uploaded.
+12. Save a final status screenshot in `screenshots/` and the actual app-generated sample PDF in `output/`.
+13. Deploy only `dist/` to Vercel, then verify the public HTTPS site in a signed-out Chrome session.
+
+## Submission fields still to complete
+
+- Registration number: not supplied in the reviewed files.
+- Public live URL: not deployed/verified in this review.
+- Final commit ID: must be copied from the actual GitHub release commit.
+- Generated output PDF and final status screenshot: not present in the uploaded archive.
+
+The original sample data is fictional according to its included README. Do not replace or modify the supplied source evidence to make a test pass.

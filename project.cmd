@@ -6,7 +6,7 @@ set "PROJECT_RUNTIME=%USERPROFILE%\.cache\codex-runtimes\codex-primary-runtime\d
 if exist "%PROJECT_RUNTIME%\bin\fallback\pnpm.cmd" if exist "%PROJECT_RUNTIME%\node\bin\node.exe" set "PATH=%PROJECT_RUNTIME%\node\bin;%PROJECT_RUNTIME%\bin\fallback;%PATH%"
 where node.exe >nul 2>nul
 if errorlevel 1 (
-  echo Node.js was not found. Install Node.js 24 or newer and reopen PowerShell.
+  echo Node.js was not found. Install Node.js 24.x or newer in the Node.js 24 line, then reopen PowerShell.
   exit /b 1
 )
 where pnpm.cmd >nul 2>nul

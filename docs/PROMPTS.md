@@ -51,3 +51,23 @@ Scope: keep desktop step navigation visible while scrolling, track the active se
 User: "check if my website follows them or not" (followed by the acceptance criteria pasted in that turn for Sections 4.1–4.9, 5, 6, and optional 7).
 
 Scope: compare the implementation, automated checks, local browser workflow, and generated sample PDF against the supplied criteria. Record verified behavior and remaining checks; do not deploy the site.
+
+## Project completion and release preparation — 8 November 2026
+
+User: "I want you to build and end this project anyway you want it"
+
+Scope: take ownership of the remaining project completion work, preserve the original problem statement and fictional sample data, review the existing implementation, improve release documentation and deployment setup, and prepare a truthful release package. Do not claim checks, generated artifacts, Git pushes, contest eligibility or a live deployment unless they are actually verified.
+
+
+## Node.js 22 compatibility and release hardening — 8 November 2026
+
+User: "change the node version and finish the project"
+
+Scope: align the repository with Node.js 22.x, keep pnpm 11.19.0, migrate pnpm 11 project settings out of `.npmrc` into `pnpm-workspace.yaml`, update local/Vercel instructions, add CI configuration, and run every verification step available in the current environment. Do not claim package installation, full tests, production build, generated PDF evidence, GitHub push or deployment unless each is actually completed.
+
+
+## Restore Node.js 24 and fix logo error typecheck — 8 November 2026
+
+User supplied the local terminal output: `pnpm install --frozen-lockfile` completed successfully with pnpm 11.19.0 and downloaded all 55 packages. `pnpm check` then failed because `LogoError` was destructured inside the `try` block but referenced in the sibling `catch` block, and the caught error was `unknown`.
+
+Scope: fix the logo error handler with a type-safe guard that preserves `logoType` and `logoInvalid`, restore the intended Node.js 24.x target across package metadata, local version files, pnpm settings, Windows helper, CI and documentation, and provide macOS setup instructions that do not assume nvm is installed. Do not claim the user's checks passed until they rerun `pnpm check` and `pnpm build`.

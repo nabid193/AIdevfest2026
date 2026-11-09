@@ -4,7 +4,7 @@
 
 This is the browser-only Tender Document Package Builder in `ViveCoding Problem/AIDevFest-ViveCoding ProblemStatement.pdf`. Read `docs/REQUIREMENTS.md`, `docs/PLAN.md`, and `docs/DECISIONS.md` before feature work. Smart Escape and the root README_START_HERE.txt describe a different practice task; do not implement their requirements.
 
-User says organizers approved repository name `nabid193/AIdevfest2026`. Do not repeatedly ask to rename it. The user authorized Part 1 (requirements import). Implement subsequent parts only when the user proceeds.
+User says organizers approved repository name `nabid193/AIdevfest2026`. Do not repeatedly ask to rename it. On 8 November 2026, the user explicitly authorized completion of the remaining project and release preparation; proceed through the remaining work without requesting phase-by-phase approval. The original contest deadline has passed, so do not claim a later release is contest-eligible.
 
 Preserve the supplied PDFs, JSON, README.txt, PNG, and their filenames. Never alter evidence or dates to make a sample pass. Do not hard-code application behavior to the sample. Fixture-specific assertions are confined to tests.
 

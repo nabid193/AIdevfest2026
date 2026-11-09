@@ -1,85 +1,141 @@
-# Tender Document Package Builder
+# TenderDesk
 
-Participant: Nabid Morshed
-GitHub: https://github.com/nabid193/AIdevfest2026
-Registration number: pending
-Public live URL: not deployed
+**Tender Document Package Builder** — a browser-based tool for preparing a checked, correctly ordered PDF package for a tender submission.
 
-## Current state
+Built by **Nabid Morshed**.
 
-Part 1 is implemented: local JSON import with validation, tender details, numerically ordered requirements, mandatory/optional and expiry indicators, and an English/Bangla interface. Invalid replacements preserve the last valid tender. PDF intake, matching, expiry/status evaluation and PDF generation remain pending. All original source documents are preserved.
+- GitHub: https://github.com/nabid193/AIdevfest2026
+- Live website: _Add the Vercel URL after deployment._
+- Registration number: _Add if required for your submission._
 
-## Run
+## What it does
 
-Node.js 24 or newer and pnpm 11.19.0. Verified on this machine with Node.js 24.19.0. Use the project launcher from PowerShell: it finds this machine's bundled runtime even when Node/pnpm are missing from your terminal PATH. It only adjusts PATH for its own process and children.
+TenderDesk helps an office user move from a tender's `requirements.json` file and a folder of PDFs to one combined package.
 
-```powershell
-.\project.cmd install --frozen-lockfile
-.\project.cmd dev
+1. Import the tender requirements and view the tender details.
+2. Add multiple PDF files and see each file's page count.
+3. Identify files with identical contents, even when their filenames differ.
+4. Match one PDF to each requirement, and change or remove a match when needed.
+5. Enter expiry dates for documents that require them.
+6. Review the status of every requirement before generating the package.
+7. Generate and download one ordered PDF with an English cover page and a page footer.
+8. Export the checklist as a CSV file.
+9. Optionally add a company logo to the cover.
+10. Switch the interface between English and Bangla.
+
+## Privacy and limits
+
+The application is frontend-only. Tender JSON, PDFs and the optional logo are read and processed in the browser; the app does not upload them to an application server or store them in a remote database. The working session is held in the current browser tab, so download the generated package before refreshing or closing the tab.
+
+The app accepts up to **30 PDF files** with a combined size of **50,000,000 bytes (50 MB decimal)**. Password-protected, damaged and non-PDF files are rejected with an explanatory message. The company logo is selected separately and accepts PNG or JPEG images.
+
+The generated package contains one English cover page followed by matched documents in the order specified by the imported requirements. Missing optional documents are skipped. A footer is added to every page in a reserved bottom margin.
+
+## Run locally
+
+Requirements:
+
+- Node.js 24.x (LTS)
+- pnpm 11.19.0 (the version declared by this project)
+
+### macOS / Linux
+
+If you already use nvm, install and select Node.js 24 with:
+
+```bash
+nvm install 24
+nvm use 24
 ```
 
-Development: http://127.0.0.1:5173
+If `nvm` is not installed (for example, zsh reports `command not found: nvm`), you do not need to install it just for this project. Download the macOS Node.js 24 LTS installer from <https://nodejs.org/en/download>, install it, and open a new Terminal window.
 
-```powershell
-.\project.cmd check
-.\project.cmd preview
+Confirm the versions, then install the project dependencies:
+
+```bash
+node --version   # should print v24.x.x
+npm install -g pnpm@11.19.0
+pnpm --version   # should print 11.19.0
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-`check` runs strict TypeScript checks, 58 sample/PDF compatibility and requirements-validation tests, and a production build. Preview serves the built site at http://127.0.0.1:4173. Stop a running server with Ctrl+C. Deploy only `dist/`.
+Open <http://127.0.0.1:5173>.
 
-If a separate PowerShell terminal cannot find pnpm.cmd, use this session's bundled executable:
+To run checks and create a production build:
 
-```powershell
-& 'C:\Users\Administrator\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\fallback\pnpm.cmd' dev
+```bash
+pnpm check
+pnpm build
+pnpm preview
 ```
 
-The bundled runtime paths are machine-specific. A different machine needs its own Node.js and pnpm installation. Vite can require an approved subprocess outside the Codex sandbox on Windows; this environment's checks passed with that approval.
+The preview is available at <http://127.0.0.1:4173>.
 
-## Stack and structure
+### Windows PowerShell
 
-- React + TypeScript + Vite: static browser application under app/.
-- pdf-lib: browser PDF library, installed and tested with provided files.
-- Vitest: verification under tests/; no test code in the production build.
-- pnpm-lock.yaml: committed dependency resolution; exact versions in package.json.
-- AGENTS.md: project boundaries and evidence requirements for future work.
-- docs/PLAN.md: implementation parts and acceptance gates.
-- docs/REQUIREMENTS.md: requirements mapped to original PDF sections.
-- docs/DECISIONS.md: technical choices, ambiguities and official library references.
-- docs/VERIFICATION.md: results and explicitly pending checks.
-- docs/PROMPTS.md: actual prompt log for commit messages and disclosure.
-- output/ and screenshots/: reserved for required final submission evidence.
+The repository includes `project.cmd`, a helper for the original Windows development environment. If Node.js 24.x and pnpm 11.19.0 are already on your PATH, the standard pnpm commands above also work in PowerShell.
 
-The original reference files are outside the app root and are not copied into dist/. Runtime document processing must remain in the browser; no application backend, remote storage or serverless functions. Node is development/test/build tooling only.
+## Deploy to Vercel
 
-## Integrations
+This is a static Vite application. Import the GitHub repository into Vercel and use:
 
-GitHub plugin is installed and access to the public repository was verified, including connector write permissions. PDF review and browser inspection tools are available. No additional plugin is required for mandatory features. No keys or .env file are needed. Git CLI push authentication has also been verified.
+| Setting | Value |
+| --- | --- |
+| Framework preset | Vite |
+| Root directory | `.` |
+| Install command | `pnpm install --frozen-lockfile` |
+| Build command | `pnpm run build` |
+| Output directory | `dist` |
+| Node.js version | 24.x |
 
-## Git and delivery
+The repository pins Node.js 24.x through `package.json`, `.nvmrc` and `.node-version`, and includes `vercel.json` with the build, output and security-header settings. Only the generated `dist/` directory is deployed. The source PDFs, sample pack, tests and development tools are not part of the deployed website.
 
-Local branch: main. Remote: https://github.com/nabid193/AIdevfest2026.git. Author name: Nabid Morshed. Git email is configured from the user-provided address. The existing GitHub initial README commit is preserved as the parent of the local setup commit. Public deployment is still pending.
+## Project structure
 
-If Git reports ownership trouble, scope the exception to this workspace:
-
-```powershell
-git -c 'safe.directory=C:/Users/Administrator/Downloads/Vibe Coding' status
+```text
+app/                 React + TypeScript browser application
+  public/             Static public assets
+  src/
+    components/       Workflow UI
+    domain/           Matching and status rules
+    features/         JSON import, PDF intake and PDF generation
+    i18n/             English and Bangla interface messages
+docs/                Requirements, plan, decisions and verification notes
+tests/               Unit and sample-pack integration tests
+ViveCoding Problem/  Original problem statement and fictional sample pack
+output/              Reserved for the final sample package
+screenshots/         Project screenshots and verification evidence
+dist/                Generated production build (not committed)
 ```
 
-Follow the rulebooks and organizer-announced timing: at least three contest-time commits and one every 30 minutes; each message includes a change summary and actual AI prompt. Do not rewrite pushed history. Public HTTPS deployment and final eligible pushed commit must match by T+90. User reports organizer approval for this repository name.
+## Tests and continuous integration
 
-## Submission information to complete
+Run `pnpm check` to execute strict TypeScript checks, the Vitest suite and the production build. The tests use the supplied fictional sample pack and derived in-memory cases. They do not modify the original source documents.
 
-- Main features: Part 1 requirements import, validation, tender overview, ordered bilingual table and import error recovery.
-- Bonus features: none.
-- Known limitations: PDF upload/matching/package generation are not implemented; no public deployment. Imported data is held in memory and clears on refresh.
-- AI tools used: OpenAI Codex.
-- Useful setup prompt: "Divide the project into parts at setup the environment with plugins and whatever we require so that we don't hallucinate or make anything wrong"
-- Most useful implementation prompt so far: "Start part 1" (the agreed scope is recorded in docs/PROMPTS.md).
-- Required output: output/T-2026-0417_Package.pdf, generated by the completed app from the official sample.
-- Required screenshot: document statuses in the completed app.
+GitHub Actions runs the same `pnpm check` command on pushes to `main` and on pull requests. Check the repository's **Actions** tab for the result after pushing changes.
 
-The root Smart Escape PDF and README_START_HERE.txt are unrelated practice references. The actual source is ViveCoding Problem/AIDevFest-ViveCoding ProblemStatement.pdf.
+Before treating a release as complete, also run the app in a current Chrome browser, exercise the full sample workflow in both languages, generate and visually inspect the PDF, and verify the deployed website.
 
-## Try Part 1
+## Known limitations
 
-Open the local app and click Choose JSON file. Select `ViveCoding Problem/problem-pack/sample-pack/requirements.json`. Expect 10 requirements (8 mandatory, 2 optional), ordered from Trade License to Signed Declaration, and a 20 October 2026 deadline. Switch to Bangla to check labels and titles. Replace the file with invalid content to see a localized error; the valid tender remains. The sample is never loaded automatically or hard-coded.
+- Work is not saved between browser sessions. Download the package before refreshing or closing the tab.
+- Matching is manual; the user must inspect each document and choose its requirement.
+- The optional index page, signature placement, automatic filename matching and AI assistance are not included.
+- Registration number and live deployment URL must be filled in if required for a formal submission.
+- Bengali text in the generated PDF is embedded with a Bengali font, but its final visual shaping should be checked in the generated PDF before relying on it for formal submission.
+
+## AI use
+
+AI tools used during development: OpenAI Codex and ChatGPT. The project prompt and implementation history is recorded in `docs/PROMPTS.md`. pnpm project settings are stored in `pnpm-workspace.yaml`, as required by pnpm 11; `.npmrc` is intentionally not used for project settings.
+
+Most useful project-planning prompt: “Divide the project into parts at setup the environment with plugins and whatever we require so that we don't hallucinate or make anything wrong”.
+
+The developer is responsible for reviewing and understanding the submitted code.
+
+## License
+
+This project is released under the MIT License. See [LICENSE](LICENSE).
+
+## Sample data notice
+
+The supplied sample pack states that all companies, people, numbers and documents in it are fictional. Use it only for testing the application. Do not upload real personal or confidential company documents to public repositories.

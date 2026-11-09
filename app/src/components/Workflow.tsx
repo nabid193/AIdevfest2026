@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { availableFor, blocking, review, type UploadedPdf, type Matches, type Expiries } from '../domain/checklist';
-import { checkCapacity, inspectPdf, IntakeError, type IntakeCode } from '../features/documents/intake';
-import { createPackage } from '../features/package/createPackage';
-import { loadPackageFonts } from '../features/package/fonts';
-import { inspectCoverLogo, LogoError, type CoverLogo, type LogoErrorCode } from '../features/package/logo';
+import type { IntakeCode } from '../features/documents/intake';
+import type { CoverLogo, LogoErrorCode } from '../features/package/logo';
 import { validDate, type TenderRequirements } from '../features/requirements/parseRequirements';
 import { workflowMessages } from '../i18n/workflow';
 import { messages, type Language } from '../i18n/messages';
@@ -11,6 +9,13 @@ import { messages, type Language } from '../i18n/messages';
 function download(url: string, name: string) {
   const anchor = document.createElement('a'); anchor.href = url; anchor.download = name;
   document.body.append(anchor); anchor.click(); anchor.remove();
+}
+function getLogoErrorCode(error: unknown): LogoErrorCode {
+  if (typeof error === 'object' && error !== null && 'code' in error) {
+    const code = error.code;
+    if (code === 'logoType' || code === 'logoInvalid') return code;
+  }
+  return 'logoInvalid';
 }
 export default function Workflow({ data, language }: { data: TenderRequirements; language: Language }) {
   const t = workflowMessages[language]; const labels = messages[language];
@@ -44,6 +49,8 @@ export default function Workflow({ data, language }: { data: TenderRequirements;
     inProgress.current = true; setWorking('upload'); setErrors([]); invalidate();
     const next = [...files]; const rejected: { name: string; code: IntakeCode }[] = [];
     try {
+      // PDF parsing is loaded only when the user starts adding documents.
+      const { checkCapacity, inspectPdf, IntakeError } = await import('../features/documents/intake');
       for (const file of incoming) {
         try {
           checkCapacity(next.length, next.reduce((sum, item) => sum + item.size, 0), file.size);
@@ -52,12 +59,17 @@ export default function Workflow({ data, language }: { data: TenderRequirements;
         } catch (error) { rejected.push({ name: file.name, code: error instanceof IntakeError ? error.code : 'readFailed' }); }
       }
       if (active.current) { setFiles(next); setErrors(rejected); }
+    } catch {
+      // A failed lazy import or unexpected intake failure should be shown in the UI, not
+      // become an unhandled promise rejection from the file-picker event handler.
+      if (active.current) setErrors(incoming.map(file => ({ name: file.name, code: 'readFailed' as const })));
     } finally { inProgress.current = false; if (active.current) setWorking(null); }
   }
   async function addLogo(file: File | undefined) {
     if (!file || inProgress.current) return;
     inProgress.current = true; setWorking('logo'); setLogoError(null); invalidate();
     try {
+      const { inspectCoverLogo } = await import('../features/package/logo');
       const selected = await inspectCoverLogo(file.name, new Uint8Array(await file.arrayBuffer()));
       if (active.current) {
         if (logoUrl.current) URL.revokeObjectURL(logoUrl.current);
@@ -66,7 +78,7 @@ export default function Workflow({ data, language }: { data: TenderRequirements;
         setCoverLogo({ ...selected, previewUrl });
       }
     } catch (error) {
-      if (active.current) setLogoError(error instanceof LogoError ? error.code : 'logoInvalid');
+      if (active.current) setLogoError(getLogoErrorCode(error));
     } finally { inProgress.current = false; if (active.current) setWorking(null); }
   }
   function removeLogo() {
@@ -91,6 +103,11 @@ export default function Workflow({ data, language }: { data: TenderRequirements;
     try {
       const now = new Date();
       const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      // PDF generation and font embedding are lazy-loaded to keep the first page light.
+      const [{ createPackage }, { loadPackageFonts }] = await Promise.all([
+        import('../features/package/createPackage'),
+        import('../features/package/fonts'),
+      ]);
       const bytes = await createPackage(data, files, matches, expiries, await loadPackageFonts(), today, coverLogo ?? undefined);
       if (active.current) {
         const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
@@ -121,7 +138,7 @@ export default function Workflow({ data, language }: { data: TenderRequirements;
       </section>
       <section id="review" className="checklist" aria-labelledby="review-heading">
         <div className="section-heading"><div><h2 id="review-heading">{t.match}</h2><p>{t.matchHint}</p></div><button type="button" className="secondary" onClick={exportCsv}>{t.exportCsv}</button></div>
-        <div className="table-scroll" tabIndex={0} role="region" aria-label={t.match}><table className="review-table"><thead><tr><th>{labels.document}</th><th>{t.file}</th><th>{t.expiry}</th><th>{t.status}</th></tr></thead><tbody>{rows.map(({ requirement, file, status }) => <tr key={requirement.id}>
+        <div className="table-scroll" tabIndex={0} role="region" aria-label={t.match}><table className="review-table"><thead><tr><th scope="col">{labels.document}</th><th scope="col">{t.file}</th><th scope="col">{t.expiry}</th><th scope="col">{t.status}</th></tr></thead><tbody>{rows.map(({ requirement, file, status }) => <tr key={requirement.id}>
           <td><strong>{number(requirement.order)}. {language === 'bn' ? requirement.title_bn : requirement.title_en}</strong><small className="requirement-id">{requirement.id} · {requirement.mandatory ? t.mandatory : t.optional}</small></td>
           <td><select value={matches[requirement.id] ?? ''} aria-label={`${t.file}: ${requirement.id}`} onChange={event => match(requirement.id, event.target.value)}><option value="">{t.select}</option>{files.map(option => <option key={option.id} value={option.id} disabled={!availableFor(requirement.id, option, matches, files)}>{option.name}{!availableFor(requirement.id, option, matches, files) ? ` · ${t.used}` : ''}</option>)}</select>{file && <small>{number(file.pages)} {t.pages}</small>}</td>
           <td>{requirement.has_expiry && file ? <><input type="date" aria-label={`${t.expiry}: ${requirement.id}`} value={expiries[requirement.id] ?? ''} onChange={event => { invalidate(); setExpiries(previous => ({ ...previous, [requirement.id]: event.target.value })); }} />{expiries[requirement.id] && !validDate(expiries[requirement.id]!) && <small>{t.invalidDate}</small>}</> : <span className="expiry">{requirement.has_expiry ? '—' : t.noExpiry}</span>}</td>
