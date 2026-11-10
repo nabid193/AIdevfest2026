@@ -4,6 +4,10 @@
 
 Built by **Nabid Morshed**.
 
+ #Vercel Link
+ 
+ https://tenderdesk-nabid.vercel.app/
+ 
 - GitHub: https://github.com/nabid193/AIdevfest2026
 - Live website: _Add the Vercel URL after deployment._
 - Registration number: _Add if required for your submission._
